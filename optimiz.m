@@ -20,7 +20,15 @@ max_dynamic_power = 300;
 total_energy_history = zeros(1, T);
 total_energy_before_opt = zeros(1, T); 
 
+% 1. Création de la figure
 figure('Name', 'Simulation 5G : Avec Optimisation', 'Color', 'w');
+
+% 2. Préparation de l'enregistrement vidéo (UNE SEULE FOIS)
+set(gcf, 'Position', [100 100 800 600]); 
+set(gcf, 'Resize', 'off'); 
+v = VideoWriter('simulation_video.mp4', 'MPEG-4');
+open(v);
+
 colors = lines(num_gNB); 
 
 for t = 1:T
@@ -86,9 +94,10 @@ for t = 1:T
     end
     total_energy_history(t) = energy_after;
     
+    % Affichage
     clf; hold on; grid on;
     xlim([0 area_size]); ylim([0 area_size]);
-    title(sprintf('Ã‰tape %d/%d | Sans Opt: %.1fW | Avec Opt: %.1fW', t, T, energy_before, energy_after));
+    title(sprintf('Etape %d/%d | Sans Opt: %.1fW | Avec Opt: %.1fW', t, T, energy_before, energy_after));
     
     for j = 1:num_gNB
         if antenna_state(j) == 1
@@ -107,14 +116,22 @@ for t = 1:T
         j = serving_gNB_opt(i);
         plot([UE_pos(i,1), gNB_pos(j,1)], [UE_pos(i,2), gNB_pos(j,2)], 'k:', 'LineWidth', 0.3);
     end
+    
     hold off; drawnow; pause(0.05);
+    
+    % --- Capture de l'image pour la vidéo ---
+    frame = getframe(gcf);
+    writeVideo(v, frame);
 end
+
+% --- Fin de l'enregistrement ---
+close(v);
 
 % Graphique Comparatif
 figure('Name', 'Impact de l''Optimisation', 'Color', 'w');
 plot(1:T, total_energy_before_opt, 'r--', 'LineWidth', 2); hold on;
 plot(1:T, total_energy_history, 'g-', 'LineWidth', 2);
-grid on; xlabel('Temps (Ã‰tapes)'); ylabel('Consommation Totale (Watts)');
+grid on; xlabel('Temps (Etapes)'); ylabel('Consommation Totale (Watts)');
 legend('Sans Optimisation', 'Avec Optimisation', 'Location', 'best');
 
 % Exportation CSV
@@ -123,4 +140,4 @@ Energy_Sans_Opt = total_energy_before_opt';
 Energy_Avec_Opt = total_energy_history';
 Results_Table = table(Time_Steps, Energy_Sans_Opt, Energy_Avec_Opt);
 writetable(Results_Table, 'resultats_green_5g.csv');
-disp('âœ… Fichier CSV exportÃ© avec succÃ¨s !');
+disp('Fichier CSV exporte avec succes !');
