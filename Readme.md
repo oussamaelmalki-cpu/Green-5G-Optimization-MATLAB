@@ -1,4 +1,5 @@
 # 🌱 Optimisation Énergétique (Green 5G) sous MATLAB
+![Simulation de l'optimisation](simulation_video.gif)
 
 ## 📖 Description
 Ce projet simule un réseau 5G sous MATLAB et implémente un algorithme d'optimisation (Load Balancing & Sleep Mode) pour réduire la consommation d'énergie (Green IT).
